@@ -55,32 +55,38 @@ function checkAccountingMismatch(bytecode) {
 
 // Rule 4: Spot Price Oracle (Puppet)
 // Lending pool uses Uniswap spot price as collateral oracle
-
 function checkOracleManipulation(bytecode) {
   const hasBalanceOf = bytecode.includes("70a08231");
   const hasExternalCall = bytecode.includes("fa");
-  const hasTWAP = bytecode.includes("252587") ||
-                  bytecode.includes("9d52a21") ||
-                  bytecode.includes("50d25bcd");
 
-  // Only flag lending/CDP contracts — DEX contracts legitimately read balances
-  const isLendingContext = 
+  // TWAP and Chainlink protection signatures
+  const hasTWAP = bytecode.includes("252587") ||   // Uniswap V3 observe()
+                  bytecode.includes("9d52a21") ||   // Chainlink latestAnswer
+                  bytecode.includes("50d25bcd");    // Chainlink latestRoundData
+
+  // Uniswap V2 specific — UniswapV2Library.quote() selector
+  const hasV2Quote = bytecode.includes("ad615dec") || // quote()
+                     bytecode.includes("85f8c259");   // getAmountOut()
+
+  // Lending context required
+  const isLendingContext =
     bytecode.includes("c55dae63") || // borrow()
     bytecode.includes("a415bcad") || // borrow(address,uint256,uint256,uint16,address)
     bytecode.includes("69328dec") || // withdraw(address,uint256,address)
-    bytecode.includes("e8eda9df") || // deposit(address,uint256,address,uint16)
-    bytecode.includes("liquidat");   // any liquidation function
+    bytecode.includes("e8eda9df");   // deposit(address,uint256,address,uint16)
 
   if (hasBalanceOf && hasExternalCall && !hasTWAP && isLendingContext) {
     return {
       rule: "ORACLE_MANIPULATION",
       severity: "CRITICAL",
       description: "Lending protocol calculates collateral using spot price without TWAP or Chainlink protection.",
-      pattern: "Challenge 5 — Puppet",
+      pattern: hasV2Quote ? "Challenge 6 — Puppet V2 (Uniswap V2 quote)" : "Challenge 5 — Puppet V1 (spot balance ratio)",
     };
   }
   return null;
 }
+
+  // Only flag lending/CDP contracts — DEX contracts
 
 // Rule 5: msgSender Spoofing (Naive Receiver)
 // Trusted forwarder reads msg.sender from calldata tail
