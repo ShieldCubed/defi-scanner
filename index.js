@@ -7,11 +7,16 @@ const { printHeader, printTarget, printFinding, printSummary } = require("./src/
 const RPC = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`;
 
 const TARGETS = [
+  { name: "Aave V3 Pool", address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2", tvl: 8e9, category: "Lending" },
+  { name: "Compound V3 USDC", address: "0xc3d688B66703497DAA19211EEdff47f25384cdc3", tvl: 1.3e9, category: "Lending" },
+  { name: "MakerDAO Vat", address: "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B", tvl: 7e9, category: "CDP" },
   { name: "Uniswap V3 Factory", address: "0x1F98431c8aD98523631AE4a59f267346ea31F984", tvl: 1.7e9, category: "DEX" },
   { name: "Uniswap V2 Factory", address: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f", tvl: 5e8, category: "DEX" },
-  { name: "Compound USDC", address: "0x39AA39c021dfbaE8faC545936693aC917d5E7563", tvl: 1e9, category: "Lending" },
   { name: "Curve 3pool", address: "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7", tvl: 1.8e9, category: "DEX" },
+  { name: "Balancer Vault", address: "0xBA12222222228d8Ba445958a75a0704d566BF2C8", tvl: 1.2e9, category: "DEX" },
   { name: "Convex Booster", address: "0xF403C135812408BFbE8713b5A23a04b3D48AAE31", tvl: 2e9, category: "Yield" },
+  { name: "Frax ETH Minter", address: "0xbAFA44EFE7901E04E39Dad13167D089C559c1138", tvl: 8e8, category: "Liquid Staking" },
+  { name: "Rocket Pool", address: "0xDD3f50F8A6CafbE9b31a427582963f465E745AF8", tvl: 3e9, category: "Liquid Staking" },
 ];
 
 async function scan() {
