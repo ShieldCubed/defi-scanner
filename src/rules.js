@@ -1,106 +1,133 @@
 const { hasSelector, analyzePatterns, SIGNATURES } = require("./analyzer");
 
-// Rule 1: Donation Attack (Unstoppable)
-// ERC4626 vault where totalAssets() reads raw balanceOf
 function checkDonationAttack(bytecode) {
   const hasDeposit = hasSelector(bytecode, SIGNATURES.ERC4626_DEPOSIT);
   const hasBalanceOf = bytecode.includes("70a08231");
   const hasTotalAssets = bytecode.includes("01e1d114");
-
   if (hasDeposit && hasBalanceOf && hasTotalAssets) {
     return {
       rule: "DONATION_ATTACK",
       severity: "HIGH",
       description: "ERC4626 vault uses raw balanceOf for totalAssets(). Direct token transfers can break share/asset ratio.",
-      pattern: "Challenge 1 — Unstoppable",
+      pattern: "Challenge 1 - Unstoppable",
     };
   }
   return null;
 }
 
-// Rule 2: Arbitrary External Call (Truster)
-// flashLoan accepts user-controlled target + calldata
 function checkArbitraryCall(bytecode) {
   const hasFlashLoan = hasSelector(bytecode, SIGNATURES.FLASH_LOAN);
   const hasArbitraryCall = analyzePatterns(bytecode).includes("arbitrary_call");
-
   if (hasFlashLoan && hasArbitraryCall) {
     return {
       rule: "ARBITRARY_CALL",
       severity: "CRITICAL",
       description: "Flash loan function executes arbitrary external calls with user-supplied target and data.",
-      pattern: "Challenge 3 — Truster",
+      pattern: "Challenge 3 - Truster",
     };
   }
   return null;
 }
 
-// Rule 3: Balance vs Storage Mismatch (Side Entrance)
-// Pool tracks balances in mapping but checks address(this).balance
 function checkAccountingMismatch(bytecode) {
   const patterns = analyzePatterns(bytecode);
   const hasMismatch = patterns.includes("balance_vs_storage");
   const hasFlashLoan = hasSelector(bytecode, SIGNATURES.FLASH_LOAN);
-
   if (hasMismatch && hasFlashLoan) {
     return {
       rule: "ACCOUNTING_MISMATCH",
       severity: "HIGH",
-      description: "Flash loan pool checks address.balance but tracks deposits in mapping. Re-entrant deposit can satisfy repayment check.",
-      pattern: "Challenge 4 — Side Entrance",
+      description: "Flash loan pool checks address.balance but tracks deposits in mapping.",
+      pattern: "Challenge 4 - Side Entrance",
     };
   }
   return null;
 }
 
-// Rule 4: Spot Price Oracle (Puppet)
-// Lending pool uses Uniswap spot price as collateral oracle
 function checkOracleManipulation(bytecode) {
   const hasBalanceOf = bytecode.includes("70a08231");
   const hasExternalCall = bytecode.includes("fa");
-
-  // TWAP and Chainlink protection signatures
-  const hasTWAP = bytecode.includes("252587") ||   // Uniswap V3 observe()
-                  bytecode.includes("9d52a21") ||   // Chainlink latestAnswer
-                  bytecode.includes("50d25bcd");    // Chainlink latestRoundData
-
-  // Uniswap V2 specific — UniswapV2Library.quote() selector
-  const hasV2Quote = bytecode.includes("ad615dec") || // quote()
-                     bytecode.includes("85f8c259");   // getAmountOut()
-
-  // Lending context required
+  const hasTWAP = bytecode.includes("252587") ||
+                  bytecode.includes("9d52a21") ||
+                  bytecode.includes("50d25bcd");
+  const hasV2Quote = bytecode.includes("ad615dec") ||
+                     bytecode.includes("85f8c259");
   const isLendingContext =
-    bytecode.includes("c55dae63") || // borrow()
-    bytecode.includes("a415bcad") || // borrow(address,uint256,uint256,uint16,address)
-    bytecode.includes("69328dec") || // withdraw(address,uint256,address)
-    bytecode.includes("e8eda9df");   // deposit(address,uint256,address,uint16)
-
+    bytecode.includes("c55dae63") ||
+    bytecode.includes("a415bcad") ||
+    bytecode.includes("69328dec") ||
+    bytecode.includes("e8eda9df");
   if (hasBalanceOf && hasExternalCall && !hasTWAP && isLendingContext) {
     return {
       rule: "ORACLE_MANIPULATION",
       severity: "CRITICAL",
       description: "Lending protocol calculates collateral using spot price without TWAP or Chainlink protection.",
-      pattern: hasV2Quote ? "Challenge 6 — Puppet V2 (Uniswap V2 quote)" : "Challenge 5 — Puppet V1 (spot balance ratio)",
+      pattern: hasV2Quote ? "Challenge 6 - Puppet V2" : "Challenge 5 - Puppet V1",
     };
   }
   return null;
 }
 
-  // Only flag lending/CDP contracts — DEX contracts
-
-// Rule 5: msgSender Spoofing (Naive Receiver)
-// Trusted forwarder reads msg.sender from calldata tail
 function checkMsgSenderSpoofing(bytecode) {
   const hasMulticall = hasSelector(bytecode, SIGNATURES.MULTICALL);
-  // CALLDATASIZE - 20 pattern (reading last 20 bytes as address)
   const hasTailRead = bytecode.includes("6014") && bytecode.includes("03");
-
   if (hasMulticall && hasTailRead) {
     return {
       rule: "MSGSENDER_SPOOFING",
       severity: "HIGH",
-      description: "Contract reads msg.sender from calldata tail when called by trusted forwarder. Attacker can append any address to spoof identity.",
-      pattern: "Challenge 2 — Naive Receiver",
+      description: "Contract reads msg.sender from calldata tail when called by trusted forwarder.",
+      pattern: "Challenge 2 - Naive Receiver",
+    };
+  }
+  return null;
+}
+
+function checkPrivilegedEOA(bytecode) {
+  const hasRole = bytecode.includes("91d14854");
+  const hasMint = bytecode.includes("40c10f19");
+  const hasTimelock = bytecode.includes("134008d3");
+  const hasMultisig = bytecode.includes("ee52a2f3");
+  if (hasRole && hasMint && !hasTimelock && !hasMultisig) {
+    return {
+      rule: "PRIVILEGED_SINGLE_EOA",
+      severity: "CRITICAL",
+      description: "Privileged role controls mint without multisig or timelock. Single point of failure - Resolv-style attack vector.",
+      pattern: "Resolv hack 2026 - single EOA mint authority",
+    };
+  }
+  return null;
+}
+
+function checkTwoStepMintFlow(bytecode) {
+  const hasRequest = bytecode.includes("7a9a6f72");
+  const hasComplete = bytecode.includes("ea2f18b7");
+  const hasMint = bytecode.includes("40c10f19");
+  if (hasMint && (hasRequest || hasComplete)) {
+    return {
+      rule: "UNCHECKED_TWO_STEP_MINT",
+      severity: "CRITICAL",
+      description: "Two-step mint flow detected. Verify amount validation exists between request and completion steps.",
+      pattern: "Resolv hack 2026 - requestSwap/completeSwap without limits",
+    };
+  }
+  return null;
+}
+
+function checkUnboundedMint(bytecode) {
+  const hasMint = bytecode.includes("40c10f19");
+  const hasCap = bytecode.includes("355274ea") ||
+                 bytecode.includes("239c70ae");
+  const hasRole = bytecode.includes("91d14854");
+  const hasExternalMintControl = bytecode.includes("7a9a6f72") ||
+                                  bytecode.includes("ea2f18b7");
+  // Only flag stablecoin/synthetic minting with role control and no cap
+  // Not DEX LP token minting which is expected
+  if (hasMint && !hasCap && hasRole && hasExternalMintControl) {
+    return {
+      rule: "UNBOUNDED_MINT",
+      severity: "CRITICAL",
+      description: "Privileged mint with no cap and two-step flow. Resolv-style 400x over-mint possible.",
+      pattern: "Resolv hack 2026 - unbounded mint vulnerability",
     };
   }
   return null;
@@ -113,11 +140,11 @@ function runAllRules(bytecode) {
     checkAccountingMismatch,
     checkOracleManipulation,
     checkMsgSenderSpoofing,
+    checkPrivilegedEOA,
+    checkTwoStepMintFlow,
+    checkUnboundedMint,
   ];
-
-  return checks
-    .map(check => check(bytecode))
-    .filter(Boolean);
+  return checks.map(check => check(bytecode)).filter(Boolean);
 }
 
 module.exports = { runAllRules };
