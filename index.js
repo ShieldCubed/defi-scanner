@@ -7,6 +7,7 @@ const { printHeader, printTarget, printFinding, printSummary } = require("./src/
 const RPC = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`;
 
 const TARGETS = [
+  { name: "Resolv USR Counter (EXPLOITED)", address: "0xAC85eF29192487E0a109b7f9E40C267a9ea95f2e", tvl: 25e6, category: "Stablecoin" },
   { name: "Aave V3 Pool", address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2", tvl: 8e9, category: "Lending" },
   { name: "Compound V3 USDC", address: "0xc3d688B66703497DAA19211EEdff47f25384cdc3", tvl: 1.3e9, category: "Lending" },
   { name: "MakerDAO Vat", address: "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B", tvl: 7e9, category: "CDP" },

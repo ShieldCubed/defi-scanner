@@ -99,15 +99,20 @@ function checkPrivilegedEOA(bytecode) {
 }
 
 function checkTwoStepMintFlow(bytecode) {
-  const hasRequest = bytecode.includes("7a9a6f72");
-  const hasComplete = bytecode.includes("ea2f18b7");
-  const hasMint = bytecode.includes("40c10f19");
-  if (hasMint && (hasRequest || hasComplete)) {
+  const hasRequestMint = bytecode.includes("986d7a69");
+  const hasCompleteMint = bytecode.includes("19b2a6b9");
+  const hasRequestBurn = bytecode.includes("f67e6070");
+  const hasCompleteBurn = bytecode.includes("a46e82d2");
+  const hasServiceRole = bytecode.includes("a20e7d47");
+  const hasRole = bytecode.includes("91d14854");
+  const hasTwoStep = (hasRequestMint && hasCompleteMint) ||
+                     (hasRequestBurn && hasCompleteBurn);
+  if (hasTwoStep && hasServiceRole && hasRole) {
     return {
       rule: "UNCHECKED_TWO_STEP_MINT",
       severity: "CRITICAL",
-      description: "Two-step mint flow detected. Verify amount validation exists between request and completion steps.",
-      pattern: "Resolv hack 2026 - requestSwap/completeSwap without limits",
+      description: "Two-step mint/burn flow with SERVICE_ROLE. No amount validation between request and completion - Resolv-style 400x over-mint possible.",
+      pattern: "Resolv hack 2026 - requestMint/completeMint without on-chain validation",
     };
   }
   return null;
