@@ -2,6 +2,7 @@ require("dotenv").config();
 const { ethers } = require("ethers");
 const { runAllRules } = require("./src/rules");
 const { analyzeWithSlither } = require("./src/slither");
+const { simulateExploit } = require("./src/simulation");
 const { printHeader, printTarget, printFinding, printSummary } = require("./src/report");
 
 const RPC = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`;
@@ -32,17 +33,22 @@ async function scan() {
       const bytecode = await provider.getCode(target.address);
       if (bytecode === "0x") continue;
 
-      // Layer 1: bytecode pattern matching (fast)
       const bytecodeFindings = runAllRules(bytecode);
-
-      // Layer 2: Slither static analysis (slower but deeper)
       const slitherFindings = await analyzeWithSlither(target.address);
-
       const findings = [...bytecodeFindings, ...slitherFindings];
 
       if (findings.length > 0) {
         printTarget(target);
         findings.forEach(printFinding);
+
+        for (const finding of findings) {
+          if (finding.severity === "CRITICAL") {
+            const sim = await simulateExploit(target, finding);
+            if (sim.simulated) {
+              console.log(`   Simulation: ${sim.passed ? "CONFIRMED on mainnet fork" : "completed - check output"}`);
+            }
+          }
+        }
         results.push({ ...target, findings });
       } else {
         console.log(`✓ ${target.name} — no issues detected`);
