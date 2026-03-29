@@ -1,0 +1,8 @@
+Compiler run failed:
+Error (8936): Invalid character in string. If you are trying to use Unicode characters, use a unicode"..." string literal.
+  --> test/PoC_Resolv_FlashLoan.t.sol:55:26:
+   |
+55 |         assertEq(fee, 0, "Fee is zero — free flash loans confirmed");
+   |                          ^^^^^^^^^^^^^^
+
+Error: Compilation failed

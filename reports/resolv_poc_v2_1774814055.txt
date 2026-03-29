@@ -1,0 +1,94 @@
+No files changed, compilation skipped
+
+Ran 2 tests for test/PoC_Resolv_FlashLoan.t.sol:PoC_Resolv_FlashLoan
+[FAIL: Fee is zero - free flash loans confirmed: 900000000000000000000 != 0] test_flashLoan_zeroFee() (gas: 11648)
+Logs:
+  [FINDING] Flash fee: 900000000000000000000 (should be > 0)
+
+Traces:
+  [13759] PoC_Resolv_FlashLoan::setUp()
+    ├─ [0] VM::envString("ETH_RPC_URL") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::createSelectFork("<rpc url>")
+    │   └─ ← [Return] 1
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] attacker: [0x9dF0C6b0066D5317aA5b38B36850548DaCCa6B4e]
+    ├─ [0] VM::label(attacker: [0x9dF0C6b0066D5317aA5b38B36850548DaCCa6B4e], "attacker")
+    │   └─ ← [Return]
+    ├─ [0] VM::deal(attacker: [0x9dF0C6b0066D5317aA5b38B36850548DaCCa6B4e], 10000000000000000000 [1e19])
+    │   └─ ← [Return]
+    ├─ [0] VM::label(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], "RUSD")
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+  [11648] PoC_Resolv_FlashLoan::test_flashLoan_zeroFee()
+    ├─ [712] RUSD::flashFee(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 1000000000000000000000000 [1e24]) [staticcall]
+    │   └─ ← [Return] 900000000000000000000 [9e20]
+    ├─ [0] console::log("[FINDING] Flash fee:", 900000000000000000000 [9e20], "(should be > 0)") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] VM::assertEq(900000000000000000000 [9e20], 0, "Fee is zero - free flash loans confirmed") [staticcall]
+    │   └─ ← [Revert] Fee is zero - free flash loans confirmed: 900000000000000000000 != 0
+    └─ ← [Revert] Fee is zero - free flash loans confirmed: 900000000000000000000 != 0
+
+Backtrace:
+  at VM.assertEq
+  at PoC_Resolv_FlashLoan.test_flashLoan_zeroFee
+
+[FAIL: EvmError: Revert] test_recon() (gas: 14635)
+Logs:
+  === RESOLV RUSD FULL RECON ===
+  Total Supply    : 12914 RUSD
+  BorrowerOps     : 0xeCabcF7d41Ca644f87B25704cF77E3011D9a70a1
+  StabilityPool   : 0x6953504F2f4537D7a7B4024508f321f7816BB6ED
+
+Traces:
+  [13759] PoC_Resolv_FlashLoan::setUp()
+    ├─ [0] VM::envString("ETH_RPC_URL") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::createSelectFork("<rpc url>")
+    │   └─ ← [Return] 1
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] attacker: [0x9dF0C6b0066D5317aA5b38B36850548DaCCa6B4e]
+    ├─ [0] VM::label(attacker: [0x9dF0C6b0066D5317aA5b38B36850548DaCCa6B4e], "attacker")
+    │   └─ ← [Return]
+    ├─ [0] VM::deal(attacker: [0x9dF0C6b0066D5317aA5b38B36850548DaCCa6B4e], 10000000000000000000 [1e19])
+    │   └─ ← [Return]
+    ├─ [0] VM::label(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], "RUSD")
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+  [14635] PoC_Resolv_FlashLoan::test_recon()
+    ├─ [0] console::log("=== RESOLV RUSD FULL RECON ===") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [2405] RUSD::totalSupply() [staticcall]
+    │   └─ ← [Return] 12914534451302647155823 [1.291e22]
+    ├─ [0] console::log("Total Supply    :", 12914 [1.291e4], "RUSD") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [349] RUSD::borrowerOperationsAddress() [staticcall]
+    │   └─ ← [Return] 0xeCabcF7d41Ca644f87B25704cF77E3011D9a70a1
+    ├─ [0] console::log("BorrowerOps     :", 0xeCabcF7d41Ca644f87B25704cF77E3011D9a70a1) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [307] RUSD::stabilityPoolAddress() [staticcall]
+    │   └─ ← [Return] 0x6953504F2f4537D7a7B4024508f321f7816BB6ED
+    ├─ [0] console::log("StabilityPool   :", 0x6953504F2f4537D7a7B4024508f321f7816BB6ED) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [235] RUSD::troveManager() [staticcall]
+    │   └─ ← [Revert] unrecognized function selector 0x3d83908a for contract 0x35282d87011f87508D457F08252Bc5bFa52E10A0, which has no fallback function.
+    └─ ← [Revert] EvmError: Revert
+
+Backtrace:
+  at RUSD.troveManager
+  at PoC_Resolv_FlashLoan.test_recon
+
+Suite result: FAILED. 0 passed; 2 failed; 0 skipped; finished in 2.77s (522.46ms CPU time)
+
+Ran 1 test suite in 7.57s (2.77s CPU time): 0 tests passed, 2 failed, 0 skipped (2 total tests)
+
+Failing tests:
+Encountered 2 failing tests in test/PoC_Resolv_FlashLoan.t.sol:PoC_Resolv_FlashLoan
+[FAIL: Fee is zero - free flash loans confirmed: 900000000000000000000 != 0] test_flashLoan_zeroFee() (gas: 11648)
+[FAIL: EvmError: Revert] test_recon() (gas: 14635)
+
+Encountered a total of 2 failing tests, 0 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 2 failed tests

