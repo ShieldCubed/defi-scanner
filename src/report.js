@@ -45,4 +45,26 @@ function printSummary(results) {
   console.log(chalk.cyan("═".repeat(60)) + "\n");
 }
 
-module.exports = { printHeader, printTarget, printFinding, printSummary };
+function saveResults(results) {
+  const fs = require("fs");
+  const output = {
+    timestamp: new Date().toISOString(),
+    findings: results.map(r => ({
+      name: r.name,
+      address: r.address,
+      tvl: r.tvl,
+      category: r.category,
+      findings: r.findings,
+    }))
+  };
+  fs.writeFileSync("scan-output.json", JSON.stringify(output, null, 2));
+  console.log(`\nResults saved to scan-output.json`);
+}
+module.exports = { printHeader, printTarget, printFinding, printSummary, saveResults };
+```
+
+Then add secrets to GitHub:
+```
+github.com/ShieldCubed/defi-scanner → Settings → Secrets → Actions → New secret
+Name: ALCHEMY_KEY → paste your key
+Name: ETHERSCAN_KEY → paste your key
