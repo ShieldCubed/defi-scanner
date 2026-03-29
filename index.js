@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { discoverNewTargets } = require("./src/discovery");
 const { ethers } = require("ethers");
 const { runAllRules } = require("./src/rules");
 const { analyzeWithSlither } = require("./src/slither");
@@ -26,9 +27,18 @@ async function scan() {
   const provider = new ethers.JsonRpcProvider(RPC);
   const results = [];
 
-  console.log(`Scanning ${TARGETS.length} known DeFi contracts...\n`);
+  // Combine hardcoded + dynamically discovered targets
+  let dynamicTargets = [];
+  try {
+    dynamicTargets = await discoverNewTargets();
+  } catch(e) {
+    console.log("Dynamic discovery failed:", e.message);
+  }
 
-  for (const target of TARGETS) {
+  const allTargets = [...TARGETS, ...dynamicTargets];
+  console.log(`Scanning ${allTargets.length} contracts (${TARGETS.length} known + ${dynamicTargets.length} newly discovered)...\n`);
+
+  for (const target of allTargets) {
     try {
       const bytecode = await provider.getCode(target.address);
       if (bytecode === "0x") continue;
@@ -40,7 +50,6 @@ async function scan() {
       if (findings.length > 0) {
         printTarget(target);
         findings.forEach(printFinding);
-
         for (const finding of findings) {
           if (finding.severity === "CRITICAL") {
             const sim = await simulateExploit(target, finding);
