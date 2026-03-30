@@ -61,10 +61,3 @@ function saveResults(results) {
   console.log(`\nResults saved to scan-output.json`);
 }
 module.exports = { printHeader, printTarget, printFinding, printSummary, saveResults };
-```
-
-Then add secrets to GitHub:
-```
-github.com/ShieldCubed/defi-scanner → Settings → Secrets → Actions → New secret
-Name: ALCHEMY_KEY → paste your key
-Name: ETHERSCAN_KEY → paste your key
