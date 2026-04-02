@@ -6,7 +6,7 @@ const { analyzeWithSlither } = require("./src/slither");
 const { simulateExploit } = require("./src/simulation");
 const { printHeader, printTarget, printFinding, printSummary } = require("./src/report");
 
-const RPC = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`;
+const RPC = process.env.ETH_RPC_URL || `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`;
 
 const TARGETS = [
   { name: "Resolv USR Counter (EXPLOITED)", address: "0xAC85eF29192487E0a109b7f9E40C267a9ea95f2e", tvl: 25e6, category: "Stablecoin" },
