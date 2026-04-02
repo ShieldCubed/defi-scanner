@@ -40,11 +40,17 @@ async function scan() {
 
   for (const target of allTargets) {
     try {
-      const bytecode = await provider.getCode(target.address);
+      const bytecode = await Promise.race([
+      provider.getCode(target.address),
+      new Promise((_,r) => setTimeout(() => r(new Error('RPC timeout')), 30000))
+    ]).catch(() => '0x');
       if (bytecode === "0x") continue;
 
       const bytecodeFindings = runAllRules(bytecode);
-      const slitherFindings = await analyzeWithSlither(target.address);
+      const slitherFindings = await Promise.race([
+      analyzeWithSlither(target.address),
+      new Promise((_,r) => setTimeout(() => r(new Error('Slither timeout')), 60000))
+    ]).catch(e => { console.log('[SKIP] Slither timeout:', target.name); return []; });
       const findings = [...bytecodeFindings, ...slitherFindings];
 
       if (findings.length > 0) {
