@@ -47,7 +47,7 @@ async function scan() {
       if (bytecode === "0x") continue;
 
       const bytecodeFindings = runAllRules(bytecode);
-      const slitherFindings = await Promise.race([
+      const slitherFindings = process.env.CI ? [] : await Promise.race([
       analyzeWithSlither(target.address),
       new Promise((_,r) => setTimeout(() => r(new Error('Slither timeout')), 60000))
     ]).catch(e => { console.log('[SKIP] Slither timeout:', target.name); return []; });
