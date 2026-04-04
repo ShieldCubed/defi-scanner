@@ -30,7 +30,7 @@ async function scan() {
   // Combine hardcoded + dynamically discovered targets
   let dynamicTargets = [];
   try {
-    dynamicTargets = await discoverNewTargets();
+    dynamicTargets = process.env.CI ? [] : await discoverNewTargets();
   } catch(e) {
     console.log("Dynamic discovery failed:", e.message);
   }
