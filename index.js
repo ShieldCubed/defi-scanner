@@ -27,7 +27,8 @@ const TARGETS = [
 async function scan() {
   printHeader();
   const provider = new ethers.JsonRpcProvider(RPC, undefined, { staticNetwork: true, polling: false });
-if (process.env.CI) console.log("[CI] Mode: Slither=off, Simulation=off, Discovery=off, RPC=", RPC ? "SET" : "MISSING");
+if (process.env.CI) console.log("[CI] Mode active. RPC=", RPC?.slice(0,40));
+if (!RPC || RPC.includes("undefined")) { console.error("[ERROR] No valid RPC URL - check ETH_RPC_URL secret"); if (process.env.CI) process.exit(0); }
   const results = [];
 
   // Combine hardcoded + dynamically discovered targets
