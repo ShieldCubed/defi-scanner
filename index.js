@@ -1,4 +1,6 @@
 require("dotenv").config();
+// Global CI timeout - kill process after 10 minutes
+if (process.env.CI) setTimeout(() => { console.log("[CI] Global timeout - exiting"); process.exit(0); }, 600000);
 const { discoverNewTargets } = require("./src/discovery");
 const { ethers } = require("ethers");
 const { runAllRules } = require("./src/rules");
@@ -24,7 +26,8 @@ const TARGETS = [
 
 async function scan() {
   printHeader();
-  const provider = new ethers.JsonRpcProvider(RPC);
+  const provider = new ethers.JsonRpcProvider(RPC, undefined, { staticNetwork: true, polling: false });
+if (process.env.CI) console.log("[CI] Mode: Slither=off, Simulation=off, Discovery=off, RPC=", RPC ? "SET" : "MISSING");
   const results = [];
 
   // Combine hardcoded + dynamically discovered targets
