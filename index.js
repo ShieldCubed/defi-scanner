@@ -58,7 +58,7 @@ async function scan() {
         findings.forEach(printFinding);
         for (const finding of findings) {
           if (finding.severity === "CRITICAL") {
-            const sim = await simulateExploit(target, finding);
+            const sim = process.env.CI ? {simulated:false} : await simulateExploit(target, finding);
             if (sim.simulated) {
               console.log(`   Simulation: ${sim.passed ? "CONFIRMED on mainnet fork" : "completed - check output"}`);
             }

@@ -1,8 +1,7 @@
 const axios = require("axios");
 const { ethers } = require("ethers");
 
-const ALCHEMY_KEY = process.env.ALCHEMY_KEY;
-const RPC = `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`;
+const RPC = process.env.ETH_RPC_URL || `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`;
 const TVL_THRESHOLD = 1_000_000;
 const MAX_AGE_DAYS = 90;
 
