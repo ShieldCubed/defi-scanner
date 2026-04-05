@@ -268,9 +268,10 @@ def detect_holes(state_map_file):
 
 if __name__ == '__main__':
     state_map = sys.argv[1] if len(sys.argv) > 1 else '/tmp/state_map.json'
+    out_file = sys.argv[2] if len(sys.argv) > 2 else '/tmp/cohomology_report.json'
     result = detect_holes(state_map)
     
-    out_file = '/tmp/cohomology_report.json'
+    out_file = sys.argv[2] if len(sys.argv) > 2 else '/tmp/cohomology_report.json'
     with open(out_file, 'w') as f:
         json.dump(result, f, indent=2)
     print(f"\n[✓] Full report saved to {out_file}")
