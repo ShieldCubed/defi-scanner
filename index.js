@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { runCohomologyAnalysis } = require("./src/cohomology/index");
 // Global CI timeout - kill process after 10 minutes
 if (process.env.CI) setTimeout(() => { console.log("[CI] Global timeout - exiting"); process.exit(0); }, 600000);
 const { discoverNewTargets } = require("./src/discovery");
